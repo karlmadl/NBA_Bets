@@ -65,7 +65,8 @@ postgame_info = pd.DataFrame(data={
     'participant full name': names,
     'points scored': scores,
     'points allowed': swap_pairs(scores),
-    'total points scored': [scores[i] + swap_pairs(scores)[i] for i in range(len(names))]
+    'total points scored': [scores[i] + swap_pairs(scores)[i] for i in range(len(names))],
+    'lost by': [swap_pairs(scores)[i] - scores[i] for i in range(len(scores))]
 })
 
 
@@ -73,31 +74,14 @@ dfs_to_merge = [pregame_info, pss, mls, tos, postgame_info]
 
 df_merged = reduce(lambda left,right: pd.merge(left,right,on=['participant full name'], how='outer'), dfs_to_merge)
 
-print(df_merged)
+results_df = pd.DataFrame(data={
+    'participant full name': names,
+    'spread result': ["win" if df_merged['lost by'][i] < df_merged['spread'][i] else "loss" if df_merged['lost by'][i] > df_merged['spread'][i] else "push" for i in range(len(names))],
+    'moneyline result': ["win" if df_merged["points allowed"][i] < df_merged['points scored'][i] else 'loss' for i in range(len(names))],
+    'total result': ["win" if df_merged['total points scored'][i] > df_merged['total'][i] else "loss" if df_merged['total points scored'][i] < df_merged['total'][i] else "push" for i in range(len(names))]
+})
+
+final_df = pd.merge(df_merged, results_df, on='participant full name')
 
 
-
-# ps_result, ml_result, to_result = [], [], []
-# for i in range(len(df_merged)):
-#     if df_merged['points allowed'][i] - df_merged['points scored'][i] > df_merged['spread'][i]:
-#         ps_result.append('loss')
-#     elif df_merged['points allowed'][i] - df_merged['points scored'][i] < df_merged['spread'][i]:
-#         ps_result.append('win')
-#     elif df_merged['points allowed'][i] - df_merged['points scored'][i] == df_merged['spread'][i]:
-#         ps_result.append('push')
-
-#     if df_merged['points allowed'][i] > df_merged['points scored'][i]:
-#         ml_result.append('loss')
-#     elif df_merged['points allowed'][i] < df_merged['points scored'][i]:
-#         ml_result.append('win')
-
-#     if df_merged['total points scored'][i] < df_merged['total'][i]:
-#         to_result.append('loss')
-#     elif df_merged['total points scored'][i] > df_merged['total'][i]:
-#         to_result.append('win')
-#     elif df_merged['total points scored'][i] == df_merged['total'][i]:
-#         to_result.append('push')
-
-# df_merged['spread result'], df_merged['moneyline result'], df_merged['total result'] = ps_result, ml_result, to_result
-
-# print(df_merged)
+print(final_df)
