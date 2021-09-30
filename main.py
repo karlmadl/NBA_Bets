@@ -13,7 +13,7 @@ def swap_pairs(ls):
 
 
 BOOK = 'Bovada'
-CURRENT_DATE = '2021-03-11' # str(date.today())
+CURRENT_DATE = '2021-03-11' # yesterday = str(date.today() - timedelta(days=1))
 
 dt = datetime.strptime(CURRENT_DATE, '%Y-%m-%d')
 nba = NBA()
