@@ -84,4 +84,10 @@ results_df = pd.DataFrame(data={
 final_df = pd.merge(df_merged, results_df, on='participant full name')
 
 
-print(final_df)
+
+
+
+
+import sqlite3
+
+con = sqlite3.connect('example.db')
