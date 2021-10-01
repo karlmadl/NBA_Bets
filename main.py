@@ -13,9 +13,9 @@ def swap_pairs(ls):
 
 
 BOOK = 'Bovada'
-CURRENT_DATE = '2021-03-11' # yesterday = str(date.today() - timedelta(days=1))
+DATE = str(date.today() - timedelta(days=1))
 
-dt = datetime.strptime(CURRENT_DATE, '%Y-%m-%d')
+dt = datetime.strptime(DATE, '%Y-%m-%d')
 nba = NBA()
 sb = Sportsbook()
 
@@ -53,7 +53,7 @@ opponents = swap_pairs(names)
 
 pregame_info = pd.DataFrame(data={
     'participant full name': names,
-    'date': [CURRENT_DATE]*len(names),
+    'date': [DATE]*len(names),
     'opponent': opponents,
     'home': [i % 2 == 0 for i in range(len(names))],
     })
@@ -87,7 +87,24 @@ final_df = pd.merge(df_merged, results_df, on='participant full name')
 
 
 
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+from gspread_dataframe import set_with_dataframe
 
-import sqlite3
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
+         "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    "../credentials.json", scope)
+client = gspread.authorize(credentials)
+sheet1 = client.open("NBA Bets").get_worksheet(3)
 
-con = sqlite3.connect('example.db')
+height = len(sheet1.col_values(1)) + 1
+
+if height > 1: 
+    A = False
+else: 
+    A = True
+
+set_with_dataframe(sheet1, final_df, row=height, include_column_header=A)
+
+print('done')
