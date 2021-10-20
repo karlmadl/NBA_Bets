@@ -98,9 +98,9 @@ from gspread_dataframe import set_with_dataframe
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-credentials = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_name("C:/Users/kimba/VSCode Projects/NBA_Bets/credentials.json", scope)
 client = gspread.authorize(credentials)
-sheet1 = client.open("NBA Bets 2021-22").get_worksheet(1)
+sheet1 = client.open("NBA Bets 2021-22").get_worksheet(0)
 
 height = len(sheet1.col_values(1)) + 1
 
