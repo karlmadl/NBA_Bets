@@ -25,9 +25,9 @@ moneylines = OpeningLines(e.ids(), nba.market_id('ml'), sb.id(BOOK)).dataframe(e
 pointspreads = OpeningLines(e.ids(), nba.market_id('ps'), sb.id(BOOK)).dataframe(e)
 totals = OpeningLines(e.ids(), nba.market_id('total'), sb.id(BOOK)).dataframe(e)
 
-pointspreads.rename(columns={'spread / total': 'spread'}, inplace=True)
-moneylines.rename(columns={'american odds': 'moneyline'}, inplace=True)
-totals.rename(columns={'spread / total': 'total'}, inplace=True)
+pointspreads = pointspreads.rename(columns={'spread / total': 'spread'})
+moneylines = moneylines.rename(columns={'american odds': 'moneyline'})
+totals = totals.rename(columns={'spread / total': 'total'})
 
 corrections = {
     "L.A. Clippers Clippers": "L.A. Clippers",
@@ -86,6 +86,9 @@ for df in wrong_name_dfs:
 dfs_to_merge = [pregame_info, pointspreads_to_merge, moneylines_to_merge, totals_to_merge, postgame_info, results]
 
 final_df = reduce(lambda left,right: pd.merge(left,right,on=['participant full name'], how='outer'), dfs_to_merge)
+
+if len(final_df[final_df["home"] == True]) % 2 == 1:
+    final_df.loc[final_df['participant full name'] == 'Portland Trail Blazers', ['home']] = True
 
 
 
