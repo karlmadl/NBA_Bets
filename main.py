@@ -87,7 +87,7 @@ dfs_to_merge = [pregame_info, pointspreads_to_merge, moneylines_to_merge, totals
 
 final_df = reduce(lambda left,right: pd.merge(left,right,on=['participant full name'], how='outer'), dfs_to_merge)
 
-if len(final_df[final_df["home"] == True]) % 2 == 1:
+if len(final_df[final_df["home"] == True]) != len(final_df[final_df["home"] == False]):
     final_df.loc[final_df['participant full name'] == 'Portland Trail Blazers', ['home']] = True
 
 
