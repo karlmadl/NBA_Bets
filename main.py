@@ -94,3 +94,24 @@ if len(final_df[final_df["home"] == True]) != len(final_df[final_df["home"] == F
 
 
 
+
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+from gspread_dataframe import set_with_dataframe
+
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
+         "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+credentials = ServiceAccountCredentials.from_json_keyfile_name("C:/Users/kimba/VSCode Projects/NBA_Bets/credentials.json", scope)
+client = gspread.authorize(credentials)
+sheet1 = client.open("NBA Bets 2021-22").get_worksheet(0)
+
+height = len(sheet1.col_values(1)) + 1
+
+if height > 1: 
+    A = False
+else: 
+    A = True
+
+set_with_dataframe(sheet1, final_df, row=height, include_column_header=A)
+
+print('done')
