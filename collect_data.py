@@ -1,12 +1,6 @@
 from pysbr import * 
 from datetime import datetime
 
-def swap_pairs(ls):
-    swapped_pairs = [None]*len(ls)
-    swapped_pairs[::2] = ls[1::2]
-    swapped_pairs[1::2] = ls[::2]
-
-    return swapped_pairs
 
 
 def correct_names(arr):
