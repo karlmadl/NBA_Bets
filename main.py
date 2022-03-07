@@ -57,7 +57,11 @@ df = pd.DataFrame(data={
     "team": bet_data.participants, 
     "date": [DATE]*len(bet_data.participants),
     "opponent": swap_pairs(bet_data.participants),
+
+    # admittedly a funky line, uses the way teams are
+    # listed in events to evaulate True or False
     "home": [bet_data.home_teams[i] == bet_data.participants[i].split(" ")[1] for i in range(len(bet_data.participants))],
+    
     "spread": bet_data.pointspreads,
     "moneyline": bet_data.moneylines,
     "total": bet_data.totals,
