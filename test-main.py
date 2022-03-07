@@ -127,6 +127,3 @@ else:
 # upload dataframe to sheet
 
 set_with_dataframe(sheet1, df, row=height, include_column_header=Need_Header)
-
-
-print("done")
