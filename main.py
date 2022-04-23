@@ -14,7 +14,7 @@ bet_data_df = pd.DataFrame(data=vars(bet_data))
 upload_to_google_sheet(data=bet_data_df,
                        workbook="NBA Bets 2021-22",
                        sheet_index=0,
-                       credentials_json_path="C:/Users/kimba/VSCode Projects/NBA_Bets/credentials.json")
+                       credentials_json_path="credentials.json")
 
 
 props_data = collect_data.PlayerProps(LastNGames="10", SeasonType="Playoffs").get_data()
