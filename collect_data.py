@@ -87,42 +87,85 @@ class TeamBettingData:
         cleaner solution. Perhaps it'd be best to treat most of these as
         properties instead.
         """
-        date = datetime.strptime(date, r"%Y-%m-%d")
+        self.date = datetime.strptime(date, r"%Y-%m-%d")
         nba, sb = NBA(), Sportsbook()
-        e = EventsByDate(nba.league_id, date)
-        pointspreads = OpeningLines(e.ids(), nba.market_id("ps"), sb.id(book)).dataframe(e)
-        events = pointspreads["event"].tolist()
-        home_teams = [events[i].split(" ")[-1] for i in range(len(events))]
+        e = EventsByDate(nba.league_id, self.date)
+        self.ps_df = OpeningLines(e.ids(), nba.market_id("ps"), sb.id(book)).dataframe(e)
+        self.ml_df = OpeningLines(e.ids(), nba.market_id("ml"), sb.id(book)).dataframe(e)
+        self.tot_df = OpeningLines(e.ids(), nba.market_id("total"), sb.id(book)).dataframe(e)
+        events = self.ps_df["event"].tolist()
+        self.home_teams = [events[i].split(" ")[-1] for i in range(len(events))]
 
+    @property
+    def participants(self):
+        return correct_names(self.ps_df["participant full name"].tolist())
 
-        self.participants = correct_names(pointspreads["participant full name"].tolist())
+    @property
+    def opponents(self):
+        return swap_consec_pairs(self.participants)
 
-        self.date = date
+    @property
+    def home(self):
+        return [self.home_teams[i] in self.participants[i] for i in range(len(self.home_teams))]
 
-        self.opponents = swap_consec_pairs(self.participants)
+    @property
+    def pointspreads(self):
+        return self.ps_df["spread / total"].tolist()
 
-        self.home = [home_teams[i] in self.participants[i] for i in range(len(home_teams))]
+    @property
+    def moneylines(self):
+        return self.ml_df["american odds"].tolist()
 
-        self.pointspreads = pointspreads["spread / total"].tolist()
+    @property
+    def totals(self):
+        return self.tot_df["spread / total"].tolist()
 
-        self.moneylines = OpeningLines(e.ids(), nba.market_id("ml"), sb.id(book)).dataframe(e)["american odds"].tolist()
+    @property
+    def scores(self):
+        return self.ps_df["participant score"].tolist()
 
-        self.totals = OpeningLines(e.ids(), nba.market_id("total"), sb.id(book)).dataframe(e)["spread / total"].tolist()
+    @property
+    def points_allowed(self):
+        return swap_consec_pairs(self.scores)
 
-        self.scores = pointspreads["participant score"].tolist()
+    @property
+    def total_points_scored(self):
+        return (np.array(self.scores) + np.array(self.points_allowed)).tolist()
 
-        self.points_allowed = swap_consec_pairs(self.scores)
+    @property
+    def lost_by(self):
+        return (np.array(self.points_allowed) - np.array(self.scores)).tolist()
 
-        self.total_points_scored = (np.array(self.scores)
-                                    + np.array(self.points_allowed)).tolist()
+    @property
+    def pointspread_win(self):
+        return (np.array(self.points_allowed) - np.array(self.scores) < np.array(self.pointspreads)).tolist()
 
-        self.lost_by = (np.array(self.points_allowed) - np.array(self.scores)).tolist()
+    @property
+    def moneyline_win(self):
+        return (np.array(self.scores) > np.array(self.points_allowed)).tolist()
 
-        self.pointspread_win = (np.array(self.points_allowed) - np.array(self.scores) < np.array(self.pointspreads)).tolist()
+    @property
+    def total_over(self):
+        return (np.array(self.total_points_scored) > np.array(self.totals)).tolist()
 
-        self.moneyline_win = (np.array(self.scores) > np.array(self.points_allowed)).tolist()
-
-        self.totals_over = (np.array(self.total_points_scored) > np.array(self.totals)).tolist()
+    def properties(self) -> dict:
+        props = {
+            "participants": self.participants,
+            "date": self.date,
+            "opponents": self.opponents,
+            "home": self.home,
+            "pointspreads": self.pointspreads,
+            "moneylines": self.moneylines,
+            "totals": self.totals,
+            "scores": self.scores,
+            "points_allowed": self.points_allowed,
+            "total_points_scored": self.total_points_scored,
+            "lost_by": self.lost_by,
+            "pointspread_win": self.pointspread_win,
+            "moneyline_win": self.moneyline_win,
+            "total_over": self.total_over
+        }
+        return props
 
 
 # -----------------------------------------------------------------------

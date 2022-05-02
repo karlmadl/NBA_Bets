@@ -10,7 +10,7 @@ BOOK = "Bovada"
 
 bet_data = collect_data.TeamBettingData(date=DATE, book=BOOK)
 
-bet_data_df = pd.DataFrame(data=vars(bet_data))
+bet_data_df = pd.DataFrame(data=bet_data.properties())
 upload_to_google_sheet(
     data=bet_data_df,
     workbook="NBA Bets 2021-22",
