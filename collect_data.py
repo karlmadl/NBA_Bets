@@ -138,7 +138,8 @@ class TeamBettingData:
 
     @property
     def pointspread_win(self):
-        return (np.array(self.points_allowed) - np.array(self.scores) < np.array(self.pointspreads)).tolist()
+        return (np.array(self.points_allowed) - np.array(self.scores)
+                < np.array(self.pointspreads)).tolist()
 
     @property
     def moneyline_win(self):
