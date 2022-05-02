@@ -30,18 +30,33 @@ def swap_consec_pairs(arr: list):
     Returns a copy of the passed list with all consecutive pairs
     interchanged.
 
+    If the list has an odd length, the last element will remain in place.
+    Other iterables can be passed (str, tuple, numpy array) but a list
+    will be returned.
+
     Parameters
     ----------
     arr : list
 
-    Example
-    ---------
+    Examples
+    ----------
     >>> my_list = ["A", "B", "C", "D"]
     >>> swap_consec_pairs(my_list)
     ["B", "A", "D", "C"]
+    ----------
+    >>> my_list = [1, 2, 3, 4, 5]
+    >>> swap_consec_pairs(my_list)
+    [2, 1, 4, 3, 5]
     """
     swapped = [None]*len(arr)
-    swapped[::2], swapped[1::2] = arr[1::2], arr[::2]
+
+    if len(arr) % 2 == 0:
+        swapped[::2] = arr[1::2]
+        swapped[1::2] = arr[::2]
+    elif len(arr) % 2 == 1:
+        swapped[:len(arr)-1:2] = arr[1::2]
+        swapped[1::2] = arr[:len(arr)-1:2]
+        swapped[-1] = arr[-1]
 
     return swapped
 
