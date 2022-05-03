@@ -28,34 +28,34 @@ def upload_to_google_sheet(
         gspread_dataframe.set_with_dataframe
 
     credentials_json_path : str
-        The relative path to a json file containing the information
-        about the bot account that the workbook should be shared with.
+        The path to a `json` file containing the information about the
+        bot account that the workbook should be shared with.
         Refer to gspread's Authentication -> For Bots for more info.
 
     workbook : str
         The name of the Google Sheets workbook
 
     sheet_index : int
-        Indexed from 0, default to 0. The index of the sheet in the
+        Indexed from `0`, default to `0`. The index of the sheet in the
         workbook to be accessed.
         Ex: the sheet as the far left tab in the workbook is index 0, to
         the right of it is index 1...
 
     row : int
-        Indexed from 1, default to 1. Row index for where to insert
+        Indexed from `1`, default to `1`. Row index for where to insert
         DataFrame, anchored in the top left.
 
     col : int
-        Indexed from 1, default to 1. Column index for where to insert
-        DataFrame, anchored in the top left.
+        Indexed from `1`, default to `1`. Column index for where to
+        insert DataFrame, anchored in the top left.
 
     append : bool
-        Default to False. If True, will overwrite row to be first empty
-        row after last value in column defined by col
+        Default to `False`. If `True`, will overwrite `row` to be first
+        empty row after last value in column defined by `col`
 
     head : bool
-        Default to False, If True, will include the DataFrame column
-        names as a header row.
+        Default to `False`, If `True`, will include the DataFrame
+        column names as a header row.
     
     flush_range : str
         Optional argument. Google Sheets range format ("A1:C5", "D:L").
@@ -66,11 +66,13 @@ def upload_to_google_sheet(
     gc = gspread.service_account(filename=credentials_json_path)
     sheet = gc.open(workbook).get_worksheet(sheet_index)
 
-    # Removes all values from flush_range if specified
+    # Clears all values from flush_range if specified
     if flush_range is not None:
         col_num, row_num = range_to_colrows_count(flush_range, sheet.row_count)
-        flush_dict = {"range": flush_range,
-                      "values": [[""]*col_num]*row_num}
+        flush_dict = {
+            "range": flush_range,
+            "values": [[""]*col_num]*row_num
+        }
         sheet.batch_update([flush_dict])
 
     if append is True:
